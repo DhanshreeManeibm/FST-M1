@@ -1,60 +1,28 @@
-package activities;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.By;
-import org.testng.SkipException;
-import org.testng.annotations.*;
-import org.testng.annotations.AfterMethod;
-import org.testng.Assert;
-public class Activity2 {
-    WebDriver driver;
+package Activities;
 
-    @BeforeTest
-    public void beforeMethod() {
-        // Set up the Firefox driver
-        WebDriverManager.firefoxdriver().setup();
-        //Create a new instance of the Firefox driver
-        driver = new FirefoxDriver();
+import org.junit.jupiter.api.Test;
+import activityPrograms.BankAccount;
+import activityPrograms.NotEnoughFundsException;
+import static org.junit.jupiter.api.Assertions.*;
 
-        //Open the browser
-        driver.get("https://www.training-support.net/selenium/target-practice");
+class ExpectedExceptionTest {
+
+    @Test
+    void notEnoughFunds() {
+        // Create an object for BankAccount class
+        BankAccount account = new BankAccount(9);
+
+        // Assertion for exception
+        assertThrows(NotEnoughFundsException.class, () -> account.withdraw(10),
+                "Balance must be greater than amount of withdrawal");
     }
 
     @Test
-    public void testCase1() {
-        //This test case will pass
-        String title = driver.getTitle();
-        System.out.println("Title is: " + title);
-        Assert.assertEquals(title, "Target Practice");
-    }
+    void enoughFunds() {
+        // Create an object for BankAccount class
+        BankAccount account = new BankAccount(100);
 
-    @Test
-    public void testCase2() {
-        //This test case will Fail
-        WebElement blackButton = driver.findElement(By.cssSelector("button.black"));
-        Assert.assertTrue(blackButton.isDisplayed());
-        Assert.assertEquals(blackButton.getText(), "Black");
+        // Assertion for no exceptions
+        assertDoesNotThrow(() -> account.withdraw(100));
     }
-
-    @Test(enabled = false)
-    public void testCase3() {
-        //This test will be skipped and not counted
-        String subHeading = driver.findElement(By.className("sub")).getText();
-        Assert.assertTrue(subHeading.contains("Practice"));
-    }
-
-    @Test
-    public void testCase4() {
-        //This test will be skipped and will be shown as skipped
-        throw new SkipException("Skipping test case");
-    }
-
-    @AfterTest
-    public void afterMethod() {
-        //Close the browser
-        driver.close();
-    }
-
 }
